@@ -43,7 +43,8 @@ fun addTaskProgressor() {
             },
             //label = { Text("Enter text") },
             //maxLines = 2,
-            textStyle = TextStyle(color = Color.Black, fontWeight = FontWeight.Bold, //fontSize = TextUnit(30f, TextUnitType.Sp)
+            textStyle = TextStyle(
+                color = Color.Black, fontWeight = FontWeight.Bold, //fontSize = TextUnit(30f, TextUnitType.Sp)
             ),
 
         )

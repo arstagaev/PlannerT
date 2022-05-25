@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.res.ResourcesCompat
 import com.avtelma.tagaevplanner.ui.addTaskProgressor
 import com.avtelma.tagaevplanner.ui.theme.TagaevPlannerTheme
+import com.avtelma.tagaevplanner.ui.theme.colorButtonAdd
 
 var tasks = mutableStateListOf<Task>(
     Task(mutableStateOf<Float>(12f),   ""),
@@ -74,10 +75,14 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
+                    color = Color.White
                 ) {
                     AnimatedVisibility(visible = visibleListOfTasks.value) {
+                        // first home screen
                         Box(modifier = Modifier.fillMaxSize()) {
+//                            Row(Modifier.fillMaxWidth().height(80.dp)) {
+//
+//                            }
                             LazyColumn (
                                 modifier = Modifier
                                     .padding(top = 0.dp)
@@ -87,13 +92,25 @@ class MainActivity : ComponentActivity() {
                             ) {
 
                                 //var counter = 0
-
+                                item {
+                                    Text(
+                                        text = "TagaevPlanner",
+                                        color = Color.Black,
+                                        modifier = Modifier
+                                            .width(IntrinsicSize.Min)
+                                            .height(IntrinsicSize.Min)
+                                            .padding(10.dp),
+                                        fontSize = 30.sp,fontFamily = FontFamily(ResourcesCompat.getFont(LocalContext.current, R.font.rubik_regular)!!)
+                                    )
+                                }
                                 itemsIndexed(tasks2.toList().sorted()
                                 ) { index : Int, task : Float ->
                                     proster(task,index)
                                 }
                             }
-                            FloatingActionButton(modifier = Modifier.align(Alignment.BottomEnd).padding(10.dp),
+                            FloatingActionButton(modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(10.dp),
 //                                icon = { Icon(Icons.Filled.Add,"") },
 //                                text = { //Text("FloatingActionButton")
 //                                       },
@@ -102,17 +119,16 @@ class MainActivity : ComponentActivity() {
                                 backgroundColor = Color.Blue,
                                 contentColor = Color.White
                             ){
-                                Icon(Icons.Filled.Add,"", modifier = Modifier)
+                                Icon(Icons.Filled.Add,"", modifier = Modifier, contentColorFor(
+                                    backgroundColor = colorButtonAdd
+                                ))
                             }
                         }
-
                     }
                     AnimatedVisibility(visible = !visibleListOfTasks.value) {
+                        //second screen creator of task
                         addTaskProgressor()
                     }
-
-
-
                 }
             }
         }
@@ -131,8 +147,8 @@ class MainActivity : ComponentActivity() {
         var lastY = 0f
         Card(
             modifier = Modifier
-                .padding(8.dp, 4.dp)
-                .height(210.dp)
+                .padding(horizontal = 10.dp, vertical = 4.dp)
+                .height(200.dp)
                 .fillMaxWidth()
                 //.verticalScroll(rememberScrollState(), enabled = true)
                 //.background(Color.Cyan)
@@ -154,22 +170,6 @@ class MainActivity : ComponentActivity() {
                     Modifier
                         .fillMaxWidth()
                         .height(100.dp)
-//                        .horizontalScroll(horz)
-                        //.verticalScroll(vert,enabled = false)
-//                        .nestedScroll(
-//                            object : NestedScrollConnection {
-//                                override fun onPostScroll(
-//                                    consumed: Offset,
-//                                    available: Offset,
-//                                    source: NestedScrollSource
-//                                ): Offset {
-//                                    Log.w("wwww","wwcc ${horz.value}")
-//                                    return super.onPostScroll(consumed, available, source)
-//                                }
-//
-//                                // Implement callbacks here
-//                            }
-//                        )
                         .align(Alignment.TopCenter)
                         .pointerInput(Unit) {
                             forEachGesture {
@@ -177,10 +177,7 @@ class MainActivity : ComponentActivity() {
                                 awaitPointerEventScope {
 
                                     awaitFirstDown()
-                                    // ACTION_DOWN here
-
                                     do {
-
                                         //This PointerEvent contains details including
                                         // event, id, position and more
                                         val event: PointerEvent = awaitPointerEvent()
@@ -202,24 +199,6 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         }
-//                        .pointerInteropFilter {
-//                            when (it.action) {
-//                                MotionEvent.ACTION_DOWN -> {
-//                                    lastY = it.y
-//                                }
-//                                MotionEvent.ACTION_UP -> {}
-//                                MotionEvent.ACTION_MOVE -> {
-//                                    //it.setLocation(message,100f)
-//
-//
-//                                    asdf[index] = it.x
-//                                    it.setLocation(it.x,lastY)
-//                                    Log.w("www", "www> ${it.x}  ${it.y}<")
-//                                }
-//                                else -> false
-//                            }
-//                            true
-//                        }
                 ) {
 
                     InfiniteProgressView(modifier = Modifier.fillMaxSize(), heightINP = 100.dp, fl = tasks2[index])
@@ -228,7 +207,7 @@ class MainActivity : ComponentActivity() {
                 Box(
                     Modifier
                         .fillMaxWidth()
-                        .height(90.dp)
+                        .height(100.dp)
                         //.verticalScroll(rememberScrollState(), enabled = false)
                         .align(Alignment.BottomCenter)
                         .background(Color.Blue)
