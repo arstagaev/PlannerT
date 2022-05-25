@@ -1,6 +1,5 @@
 package com.avtelma.tagaevplanner
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -32,14 +31,22 @@ import androidx.core.content.res.ResourcesCompat
 import com.avtelma.tagaevplanner.ui.addTaskProgressor
 import com.avtelma.tagaevplanner.ui.theme.TagaevPlannerTheme
 import com.avtelma.tagaevplanner.ui.theme.colorButtonAdd
+import kotlinx.coroutines.flow.MutableStateFlow
+
+private val cards = MutableStateFlow(
+    mutableListOf<Task>(
+        Task(500f,   ""),
+        Task(1f,    "")
+    )
+)
 
 var tasks = mutableStateListOf<Task>(
-    Task(mutableStateOf<Float>(12f),   ""),
-    Task(mutableStateOf<Float>(1f),    ""),
-    Task(mutableStateOf<Float>(100f),  ""),
-    Task(mutableStateOf<Float>(92f),   ""),
-    Task(mutableStateOf<Float>(82f),   ""),
-    Task(mutableStateOf<Float>(32f),   "")
+    Task(500f,   ""),
+    Task(1f,    ""),
+    Task(100f,  ""),
+    Task(92f,   ""),
+    Task(82f,   ""),
+    Task(32f,   "")
 )
 
 var tasks2 = mutableStateListOf<Float>(
@@ -54,7 +61,7 @@ var tasks2 = mutableStateListOf<Float>(
 var pro = arrayListOf<Float>(1f,1f,1f,1f,1f,1f,11f,23f)
 var visibleListOfTasks = mutableStateOf<Boolean>(true)
 
-data class Task(var progress : MutableState<Float>, var taskDescription : String)
+data class Task(var progress : Float, var taskDescription : String)
 
 @OptIn(ExperimentalComposeUiApi::class)
 class MainActivity : ComponentActivity() {
@@ -69,9 +76,13 @@ class MainActivity : ComponentActivity() {
 //                var adsX = remember {
 //                    mutableStateOf(tasks)
 //                }
+                var cardx = cards.collectAsState()
+
                 val listState = rememberLazyListState()
 
-
+                var asd = remember {
+                    tasks
+                }
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -103,8 +114,9 @@ class MainActivity : ComponentActivity() {
                                         fontSize = 30.sp,fontFamily = FontFamily(ResourcesCompat.getFont(LocalContext.current, R.font.rubik_regular)!!)
                                     )
                                 }
-                                itemsIndexed(tasks2.toList().sorted()
-                                ) { index : Int, task : Float ->
+                                itemsIndexed(
+                                    cardx.value.toList().sortedByDescending { it.taskDescription }//.sorted()
+                                ) { index : Int, task : Task ->
                                     proster(task,index)
                                 }
                             }
@@ -136,15 +148,18 @@ class MainActivity : ComponentActivity() {
 
 
     @Composable
-    private fun proster(message: Float, index: Int) {
+    private fun proster(message: Task, index: Int) {
         var vert = rememberScrollState(0)
         var horz = rememberScrollState(0)
 
         var adsX = remember {
-           message
+           mutableStateOf(message.progress)
         }
+        //var cardx = cards.collectAsState()
 
         var lastY = 0f
+
+
         Card(
             modifier = Modifier
                 .padding(horizontal = 10.dp, vertical = 4.dp)
@@ -187,10 +202,15 @@ class MainActivity : ComponentActivity() {
                                         event.changes.forEach { pointerInputChange: PointerInputChange ->
                                             Log.w(
                                                 "fff",
-                                                "fffxxx ${pointerInputChange.position.x} ${pointerInputChange.position.y}"
+                                                "fffxxx ${pointerInputChange.position.x} ${pointerInputChange.position.y}  >> ${cards.value.joinToString()}"
                                             )
-                                            tasks2[index] = pointerInputChange.position.x
+                                            //
+                                            cards.value[index].progress =pointerInputChange.position.x
+                                            adsX.value = pointerInputChange.position.x
 
+                                            //tasks[index].progress = pointerInputChange.position.x
+                                            //adsX.value.progress = tasks[index].progress
+                                            print(">> ${cards.value.joinToString()}")
                                             pointerInputChange.consumePositionChange()
                                         }
                                     } while (event.changes.any { it.pressed })
@@ -201,7 +221,9 @@ class MainActivity : ComponentActivity() {
                         }
                 ) {
 
-                    InfiniteProgressView(modifier = Modifier.fillMaxSize(), heightINP = 100.dp, fl = tasks2[index])
+                    InfiniteProgressView(
+                        modifier = Modifier.fillMaxSize(), heightINP = 100.dp, fl = adsX.value //tasks[index].progress
+                    )
 
                 }
                 Box(
@@ -224,7 +246,6 @@ class MainActivity : ComponentActivity() {
                             ResourcesCompat.getFont(
                                 LocalContext.current, R.font.rubik_regular)!!)
                     )
-
                 }
             }
         }
