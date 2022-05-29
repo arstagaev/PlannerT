@@ -28,19 +28,23 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.res.ResourcesCompat
+import com.avtelma.tagaevplanner.Holder.SPECIAL_FLOW
+import com.avtelma.tagaevplanner.Holder._currentTasks
+import com.avtelma.tagaevplanner.Holder.currentTasks
+import com.avtelma.tagaevplanner.Holder.initialCurrencyPrices
 import com.avtelma.tagaevplanner.ui.addTaskProgressor
 import com.avtelma.tagaevplanner.ui.theme.TagaevPlannerTheme
 import com.avtelma.tagaevplanner.ui.theme.colorButtonAdd
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.*
 
-private val cards = MutableStateFlow(
+var cards = MutableStateFlow(
     mutableListOf<Task>(
         Task(500f,   ""),
         Task(1f,    "")
     )
 )
 
-var tasks = mutableStateListOf<Task>(
+var tasks = arrayListOf<Task>(
     Task(500f,   ""),
     Task(1f,    ""),
     Task(100f,  ""),
@@ -71,18 +75,45 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Generator().engine()
+
         setContent {
             TagaevPlannerTheme {
 //                var adsX = remember {
 //                    mutableStateOf(tasks)
 //                }
-                var cardx = cards.collectAsState()
+//                val flow by remember {
+//
+//                }
+
+//                val cardx by remember {
+//
+//                    val data = mutableListOf<Task>()
+//
+//                    derivedStateOf {
+//                        flow.run { data::add }
+//
+//                        flow?.run(data::add)
+//                        data
+//                    }
+//                    //cards
+//                }
+                //Holder.SPECIAL_FLOW.collectAsState(initial = arrayListOf<Task>())
+                var flow = remember {
+                    tasks.asFlow()
+                    // .collectAsState(initial = arrayListOf<Task>())
+                }
+                //val podcasts = SPECIAL_FLOW.collectAsState(arrayListOf())
 
                 val listState = rememberLazyListState()
 
                 var asd = remember {
                     tasks
                 }
+                val wellNewUpd = currentTasks.collectAsState()
+
+
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -115,7 +146,7 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
                                 itemsIndexed(
-                                    cardx.value.toList().sortedByDescending { it.taskDescription }//.sorted()
+                                    wellNewUpd.value//.sortedByDescending { it.taskDescription }//.sorted()
                                 ) { index : Int, task : Task ->
                                     proster(task,index)
                                 }
@@ -148,12 +179,15 @@ class MainActivity : ComponentActivity() {
 
 
     @Composable
-    private fun proster(message: Task, index: Int) {
+    fun proster(task: Task, index: Int) {
         var vert = rememberScrollState(0)
         var horz = rememberScrollState(0)
-
+        var ttt = SPECIAL_FLOW.collectAsState(initial = arrayListOf())
+        var trust = remember {
+            mutableStateOf(task)
+        }
         var adsX = remember {
-           mutableStateOf(message.progress)
+           mutableStateOf(task.progress)
         }
         //var cardx = cards.collectAsState()
 
@@ -167,9 +201,11 @@ class MainActivity : ComponentActivity() {
                 .fillMaxWidth()
                 //.verticalScroll(rememberScrollState(), enabled = true)
                 //.background(Color.Cyan)
-//            .clickable {
-//
-//            }
+                .clickable {
+                    onCardActive2(index,task.progress,"NEW${(0..100).random()}")
+//                    initialCurrencyPrices[0].progress = 200f
+//                    initialCurrencyPrices[0].taskDescription = "200f"
+                }
                 .shadow(
                     elevation = 20.dp, shape = RoundedCornerShape(18.dp)
                 ),
@@ -200,17 +236,23 @@ class MainActivity : ComponentActivity() {
                                         Log.w("fff", "fff ${event.buttons}")
                                         // Consuming event prevents other gestures or scroll to intercept
                                         event.changes.forEach { pointerInputChange: PointerInputChange ->
-                                            Log.w(
-                                                "fff",
-                                                "fffxxx ${pointerInputChange.position.x} ${pointerInputChange.position.y}  >> ${cards.value.joinToString()}"
-                                            )
+
                                             //
-                                            cards.value[index].progress =pointerInputChange.position.x
-                                            adsX.value = pointerInputChange.position.x
+//                                            cards.value[index].progress =
+//                                                pointerInputChange.position.x
+                                            //tasks[index].progress = pointerInputChange.position.x
+                                            initialCurrencyPrices[index].progress = pointerInputChange.position.x
+                                            onCardActive2(index,pointerInputChange.position.x)
+                                            //adsX.value = pointerInputChange.position.x
+
+                                            //message.value = pointerInputChange.position.x
 
                                             //tasks[index].progress = pointerInputChange.position.x
                                             //adsX.value.progress = tasks[index].progress
-                                            print(">> ${cards.value.joinToString()}")
+                                            Log.w(
+                                                "fff",
+                                                "fffxxx ${pointerInputChange.position.x} ${pointerInputChange.position.y}  >> ${initialCurrencyPrices.joinToString()}"
+                                            )
                                             pointerInputChange.consumePositionChange()
                                         }
                                     } while (event.changes.any { it.pressed })
@@ -222,7 +264,7 @@ class MainActivity : ComponentActivity() {
                 ) {
 
                     InfiniteProgressView(
-                        modifier = Modifier.fillMaxSize(), heightINP = 100.dp, fl = adsX.value //tasks[index].progress
+                        modifier = Modifier.fillMaxSize(), heightINP = 100.dp, fl =task.progress //adsX.value //tasks[index].progress
                     )
 
                 }
@@ -235,7 +277,8 @@ class MainActivity : ComponentActivity() {
                         .background(Color.Blue)
                         ) {
                     Text(
-                        text = "New task #${index}",
+                        text = task.taskDescription//if (ttt.value.isNotEmpty()) ttt.value[index].taskDescription else task.taskDescription
+                        ,
                         color = Color.White,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -249,6 +292,21 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    // onclicker
+    private fun onCardActive2(index: Int,progress: Float,description :String? = null) {
+        println("UPD")
+        var UPDCur = Task(progress,"false")
+        if (description != null) {
+            UPDCur = Task(progress = progress, taskDescription = description)
+        }else {
+            UPDCur = Task(progress = progress, taskDescription = initialCurrencyPrices[index].taskDescription)
+        }
+
+        val mutableCurrencyPrices = _currentTasks.value.toMutableList()
+        mutableCurrencyPrices[index] = UPDCur
+        initialCurrencyPrices = mutableCurrencyPrices as ArrayList<Task> //as MutableList<Task>
     }
 }
 
