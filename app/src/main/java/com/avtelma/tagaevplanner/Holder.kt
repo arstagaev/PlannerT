@@ -1,5 +1,7 @@
 package com.avtelma.tagaevplanner
 
+import com.avtelma.tagaevplanner.models.SphereType
+import com.avtelma.tagaevplanner.models.Task
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,6 +14,10 @@ object Holder {
     val currentTasks: StateFlow<List<Task>> get() =  _currentTasks //get() = _currencyPrices
 
     var initialCurrencyPrices = arrayListOf(
-        Task(1f,"Pixdec")
+        Task(1f,"Pixdec",SphereType.PROGRESSER.id),
+        Task(1f,"Pixdec",SphereType.PROGRESSER.id),
+        Task(1f,"Pixdec",SphereType.PROGRESSER.id),
+        Task(1f,"Pixdec",SphereType.PROGRESSER.id),
+        Task(1f,"Pixdec",SphereType.COPYPASTER.id)
     )
 }
