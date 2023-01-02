@@ -12,10 +12,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.res.ResourcesCompat
 import androidx.navigation.NavHostController
 import com.avtelma.tagaevplanner.Holder
+import com.avtelma.tagaevplanner.R
 import com.avtelma.tagaevplanner.models.SphereType
 import com.avtelma.tagaevplanner.models.Task
 import com.avtelma.tagaevplanner.navigation.Screen
@@ -38,6 +45,20 @@ fun CopyPasterScreen(mainViewModel: MainViewModel, navCtrl: NavHostController) {
 
         }
         LazyColumn(modifier = Modifier.fillMaxSize()) {
+            item {
+                Text(
+                    text = "Copypaster",
+                    color = Color.Black,
+                    modifier = Modifier
+                        .width(IntrinsicSize.Min)
+                        .height(IntrinsicSize.Min)
+                        .padding(10.dp),
+                    fontSize = 30.sp,fontFamily = FontFamily(
+                        ResourcesCompat.getFont(
+                            LocalContext.current, R.font.rubik_regular)!!)
+                )
+            }
+
             itemsIndexed(
                 Holder.initialCurrencyPrices//.filter { it.isFavorite }
             ) { index: Int, item: Task ->

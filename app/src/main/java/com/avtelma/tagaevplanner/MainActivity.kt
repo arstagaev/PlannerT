@@ -7,41 +7,23 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.avtelma.tagaevplanner.models.Task
 import com.avtelma.tagaevplanner.navigation.Screen
 import com.avtelma.tagaevplanner.ui.MainViewModel
+import com.avtelma.tagaevplanner.ui.screens.addtask.AddTaskProgressor
 import com.avtelma.tagaevplanner.ui.screens.main.MainSphereScreen
 import com.avtelma.tagaevplanner.ui.screens.progresser.ProgresserScreen
 import com.avtelma.tagaevplanner.ui.theme.TagaevPlannerTheme
-import kotlinx.coroutines.flow.*
-
-
-
-var tasks = arrayListOf<Task>(
-    Task(500f,   "",""),
-    Task(1f,    "",""),
-    Task(100f,  "",""),
-    Task(92f,   "",""),
-    Task(82f,   "",""),
-    Task(32f,   "","")
-)
-
 
 var pro = arrayListOf<Float>(1f,1f,1f,1f,1f,1f,11f,23f)
 var visibleListOfTasks = mutableStateOf<Boolean>(true)
 
-
-
-@OptIn(ExperimentalComposeUiApi::class)
 class MainActivity : ComponentActivity() {
 
 
@@ -50,7 +32,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Generator().engine()
+
 
         setContent {
             TagaevPlannerTheme {
@@ -111,11 +93,11 @@ class MainActivity : ComponentActivity() {
                     ProgresserScreen(mainViewModel, navController)
                 }
 
-//                composable(
-//                    route = Screen.ToSortCurrencies.route
-//                ) {
-//                    SortScreen(navController,mainViewModel)
-//                }
+                composable(
+                    route = Screen.AddTaskScreen.route
+                ) {
+                    AddTaskProgressor(navController,mainViewModel)
+                }
             }
 //            if (mainViewModel.isShowingDialog.value) {
 //                listOfCurrencies()

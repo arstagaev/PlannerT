@@ -31,14 +31,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.res.ResourcesCompat
 import androidx.navigation.NavHostController
-import com.avtelma.tagaevplanner.Holder
 import com.avtelma.tagaevplanner.Holder.initialCurrencyPrices
 import com.avtelma.tagaevplanner.InfiniteProgressView
 import com.avtelma.tagaevplanner.R
 import com.avtelma.tagaevplanner.models.SphereType
 import com.avtelma.tagaevplanner.models.Task
+import com.avtelma.tagaevplanner.navigation.Screen
 import com.avtelma.tagaevplanner.ui.MainViewModel
-import com.avtelma.tagaevplanner.ui.addTaskProgressor
+import com.avtelma.tagaevplanner.ui.screens.addtask.AddTaskProgressor
 import com.avtelma.tagaevplanner.ui.theme.colorButtonAdd
 import com.avtelma.tagaevplanner.visibleListOfTasks
 
@@ -47,71 +47,64 @@ fun ProgresserScreen(mainViewModel: MainViewModel, navController: NavHostControl
 
     val listState = rememberLazyListState()
 
+    val wellNewUpd = (mainViewModel.currentTasks).collectAsState()
 
-    val wellNewUpd = (Holder.currentTasks).collectAsState()
-
-    AnimatedVisibility(visible = visibleListOfTasks.value) {
-        // first home screen
-        Box(modifier = Modifier.fillMaxSize()) {
+    // first home screen
+    Box(modifier = Modifier.fillMaxSize()) {
 //                            Row(Modifier.fillMaxWidth().height(80.dp)) {
 //
 //                            }
-            LazyColumn (
-                modifier = Modifier
-                    .padding(top = 0.dp)
-                    .fillMaxHeight()
-                    .background(Color.White), state = listState
-                //.height(300.dp)
-            ) {
+        LazyColumn (
+            modifier = Modifier
+                .padding(top = 0.dp)
+                .fillMaxHeight()
+                .background(Color.White), state = listState
+            //.height(300.dp)
+        ) {
 
-                //var counter = 0
-                item {
-                    Text(
-                        text = "TagaevPlanner",
-                        color = Color.Black,
-                        modifier = Modifier
-                            .width(IntrinsicSize.Min)
-                            .height(IntrinsicSize.Min)
-                            .padding(10.dp),
-                        fontSize = 30.sp,fontFamily = FontFamily(
-                            ResourcesCompat.getFont(
-                                LocalContext.current, R.font.rubik_regular)!!)
-                    )
-                }
-                itemsIndexed(
-                    wellNewUpd.value//.sortedByDescending { it.taskDescription }//.sorted()
-                ) { index : Int, task : Task ->
-
-                    if (task.idSphere == SphereType.PROGRESSER.id) {
-                        ProgressRow(task,index)
-                    }
-
-                }
-            }
-            FloatingActionButton(modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(10.dp),
-
-                onClick = { visibleListOfTasks.value = false },
-                elevation = FloatingActionButtonDefaults.elevation(30.dp),
-                backgroundColor = Color.Magenta,
-                contentColor = Color.White
-            ){
-                Icon(
-                    Icons.Filled.Add,"", modifier = Modifier,
-                    contentColorFor(backgroundColor = colorButtonAdd)
+            //var counter = 0
+            item {
+                Text(
+                    text = "Progresser",
+                    color = Color.Black,
+                    modifier = Modifier
+                        .width(IntrinsicSize.Min)
+                        .height(IntrinsicSize.Min)
+                        .padding(10.dp),
+                    fontSize = 30.sp,fontFamily = FontFamily(
+                        ResourcesCompat.getFont(
+                            LocalContext.current, R.font.rubik_regular)!!)
                 )
             }
+            itemsIndexed(
+                wellNewUpd.value.filter { it.type == SphereType.PROGRESSER }//.sortedByDescending { it.taskDescription }//.sorted()
+            ) { index : Int, task : Task ->
+                ProgressRow(task,index, navController)
+//                if (task.idSphere == SphereType.PROGRESSER.id) {
+//
+//                }
+
+            }
         }
-    }
-    AnimatedVisibility(visible = !visibleListOfTasks.value) {
-        //second screen creator of task
-        addTaskProgressor()
+        FloatingActionButton(modifier = Modifier
+            .align(Alignment.BottomEnd)
+            .padding(10.dp),
+
+            onClick = { visibleListOfTasks.value = false },
+            elevation = FloatingActionButtonDefaults.elevation(30.dp),
+            backgroundColor = Color.Magenta,
+            contentColor = Color.White
+        ){
+            Icon(
+                Icons.Filled.Add,"", modifier = Modifier,
+                contentColorFor(backgroundColor = colorButtonAdd)
+            )
+        }
     }
 }
 
 @Composable
-fun ProgressRow(task: Task, index: Int) {
+fun ProgressRow(task: Task, index: Int, navController: NavHostController) {
     var tasker by remember {
         mutableStateOf(task)
     }
@@ -203,6 +196,9 @@ fun ProgressRow(task: Task, index: Int) {
                     //.verticalScroll(rememberScrollState(), enabled = false)
                     .align(Alignment.BottomCenter)
                     .background(Color.Blue)
+                    .clickable {
+                        navController.navigate(Screen.AddTaskScreen.route)
+                    }
             ) {
                 Text(
                     text = tasker.taskDescription//if (ttt.value.isNotEmpty()) ttt.value[index].taskDescription else task.taskDescription
@@ -223,16 +219,16 @@ fun ProgressRow(task: Task, index: Int) {
 }
 
 // onclicker
-private fun onCardActive2(index: Int,progress: Float,description :String? = null) {
-    println("UPD")
-    var UPDCur = Task(progress,"false", idSphere = "")
-    if (description != null) {
-        UPDCur = Task(progress = progress, taskDescription = description, idSphere = "")
-    }else {
-        UPDCur = Task(progress = progress, taskDescription = initialCurrencyPrices[index].taskDescription, idSphere = "")
-    }
-
-    val mutableCurrencyPrices = Holder._currentTasks.value.toMutableList()
-    mutableCurrencyPrices[index] = UPDCur
-    initialCurrencyPrices = mutableCurrencyPrices as ArrayList<Task> //as MutableList<Task>
-}
+//private fun onCardActive2(index: Int,progress: Float,description :String? = null) {
+//    println("UPD")
+//    var UPDCur = Task(progress,"false", idSphere = "")
+//    if (description != null) {
+//        UPDCur = Task(progress = progress, taskDescription = description, idSphere = "")
+//    }else {
+//        UPDCur = Task(progress = progress, taskDescription = initialCurrencyPrices[index].taskDescription, idSphere = "")
+//    }
+//
+//    val mutableCurrencyPrices = Holder._currentTasks.value.toMutableList()
+//    mutableCurrencyPrices[index] = UPDCur
+//    initialCurrencyPrices = mutableCurrencyPrices as ArrayList<Task> //as MutableList<Task>
+//}

@@ -8,16 +8,11 @@ import kotlinx.coroutines.flow.StateFlow
 
 object Holder {
 
-    var SPECIAL_FLOW = MutableSharedFlow<ArrayList<Task>>()
-
-    val _currentTasks = MutableStateFlow(listOf<Task>())
-    val currentTasks: StateFlow<List<Task>> get() =  _currentTasks //get() = _currencyPrices
-
     var initialCurrencyPrices = arrayListOf(
-        Task(1f,"Pixdec",SphereType.PROGRESSER.id),
-        Task(1f,"Pixdec",SphereType.PROGRESSER.id),
-        Task(1f,"Pixdec",SphereType.PROGRESSER.id),
-        Task(1f,"Pixdec",SphereType.PROGRESSER.id),
-        Task(1f,"Pixdec",SphereType.COPYPASTER.id)
+        Task(1f,"Pixdec1",SphereType.PROGRESSER,"My push ups"),
+        Task(1f,"Pixdec2",SphereType.PROGRESSER,"My push ups"),
+        Task(1f,"Pixdec3",SphereType.PROGRESSER,"My push ups"),
+        Task(1f,"Pixdec4",SphereType.PROGRESSER,"My push ups"),
+        Task(1f,"Pixdec5",SphereType.COPYPASTER,"My push ups")
     )
 }

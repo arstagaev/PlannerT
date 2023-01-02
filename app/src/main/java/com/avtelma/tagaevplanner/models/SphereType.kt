@@ -1,6 +1,6 @@
 package com.avtelma.tagaevplanner.models
 
-enum class SphereType(val id: String) {
-    PROGRESSER(id = "prgrs"),
-    COPYPASTER(id = "cpstr")
+enum class SphereType(val id: Int) {
+    PROGRESSER(id = 0),
+    COPYPASTER(id = 1)
 }

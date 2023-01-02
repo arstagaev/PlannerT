@@ -6,16 +6,24 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.res.ResourcesCompat
 import androidx.navigation.NavHostController
 import com.avtelma.tagaevplanner.Holder
+import com.avtelma.tagaevplanner.R
 import com.avtelma.tagaevplanner.models.SphereType
 import com.avtelma.tagaevplanner.models.Task
 import com.avtelma.tagaevplanner.navigation.Screen
@@ -38,6 +46,52 @@ fun MainSphereScreen(mainViewModel: MainViewModel, navCtrl: NavHostController) {
 
         }
         LazyColumn(modifier = Modifier.fillMaxSize()) {
+            item {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(style = SpanStyle(color = Color.Green)) {
+                                append("Tagaev")
+                            }
+                            withStyle(style = SpanStyle(color = Color.Blue)) {
+                                append("Planner")
+                            }
+                        },
+                        color = Color.Black,
+                        modifier = Modifier
+                            .width(IntrinsicSize.Min)
+                            .height(IntrinsicSize.Min)
+                            .padding(10.dp),
+                        fontSize = 30.sp,fontFamily = FontFamily(
+                            ResourcesCompat.getFont(
+                                LocalContext.current, R.font.rubik_regular)!!)
+                    )
+                    Button(
+                        onClick = {
+                            navCtrl.navigate(Screen.AddSphereScreen.route)
+                        },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.DarkGray),
+                        // Uses ButtonDefaults.ContentPadding by default
+                        contentPadding = PaddingValues(
+                            start = 20.dp,
+                            top = 12.dp,
+                            end = 20.dp,
+                            bottom = 12.dp
+                        )
+                    ) {
+                        // Inner content including an icon and a text label
+                        Icon(
+                            Icons.Filled.Add,
+                            contentDescription = "Add",
+                            tint = Color.White,
+                            modifier = Modifier.size(ButtonDefaults.IconSize)
+                        )
+                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                        Text("Add Sphere", color = Color.White)
+                    }
+                }
+
+            }
             itemsIndexed(
                 Holder.initialCurrencyPrices//.filter { it.isFavorite }
             ) { index: Int, item: Task ->
@@ -58,9 +112,9 @@ private fun RowSphere(index: Int, item: Task, navCtrl: NavHostController) {
     ) {
         Column(modifier = Modifier.clickable {
 
-            when(item.idSphere) {
-                SphereType.PROGRESSER.id -> navCtrl.navigate(Screen.ProgresserScreen.route)
-                SphereType.COPYPASTER.id -> navCtrl.navigate(Screen.CopyPasterScreen.route)
+            when(item.type) {
+                SphereType.PROGRESSER -> navCtrl.navigate(Screen.ProgresserScreen.route)
+                SphereType.COPYPASTER -> navCtrl.navigate(Screen.CopyPasterScreen.route)
             }
 
         }) {
@@ -86,7 +140,9 @@ private fun RowSphere(index: Int, item: Task, navCtrl: NavHostController) {
 
             ) {
                 Text(
-                    modifier = Modifier.padding(end = 25.dp, bottom = 5.dp).align(Alignment.BottomEnd),
+                    modifier = Modifier
+                        .padding(end = 25.dp, bottom = 5.dp)
+                        .align(Alignment.BottomEnd),
                     text = "${item.taskDescription}  ${item.idSphere}",
                     color = colorFontBurrito,
                     fontSize = 16.sp
